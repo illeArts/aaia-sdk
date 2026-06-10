@@ -8,9 +8,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # Required for NuGet Trusted Publishing (OIDC)
-
     steps:
       - uses: actions/checkout@v4
 
@@ -36,23 +33,17 @@ jobs:
           /p:Version=${{ steps.version.outputs.VERSION }}
           -o ./artifacts
 
-      - name: Push to NuGet.org (Trusted Publishing)
-        run: |
-          NUGET_TOKEN=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=nuget.org" \
-            -H "Authorization: Bearer ${ACTIONS_RUNTIME_TOKEN}" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin)['value'])")
-          dotnet nuget push ./artifacts/*.nupkg \
-            --api-key "$NUGET_TOKEN" \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
+      - name: Push to NuGet.org
+        run: >
+          dotnet nuget push ./artifacts/*.nupkg
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
 
       - name: Push symbols
-        run: |
-          NUGET_TOKEN=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=nuget.org" \
-            -H "Authorization: Bearer ${ACTIONS_RUNTIME_TOKEN}" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin)['value'])")
-          dotnet nuget push ./artifacts/*.snupkg \
-            --api-key "$NUGET_TOKEN" \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
+        run: >
+          dotnet nuget push ./artifacts/*.snupkg
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
         continue-on-error: true
