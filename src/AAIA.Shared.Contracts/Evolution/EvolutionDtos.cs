@@ -41,7 +41,7 @@ public enum EvolutionRelevance
     Low    = 0,
     Medium = 1,
     High   = 2,
-    /// <summary>Kritisch — sofortige Analyse erforderlich (z. B. API-Abkündigung < 60 Tage).</summary>
+    /// <summary>Kritisch — sofortige Analyse erforderlich (z. B. API-Abkündigung &lt; 60 Tage).</summary>
     Critical = 3
 }
 

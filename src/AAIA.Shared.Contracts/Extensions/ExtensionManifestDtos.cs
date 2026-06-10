@@ -429,4 +429,6 @@ public static class AaiaExtensionManifestRules
             .Select(g => g.Key);
 
         foreach (var duplicate in duplicates)
-            errors.Add($"{fieldName} contains duplicate value '{duplicate}'.")
+            errors.Add($"{fieldName} contains duplicate value '{duplicate}'.");
+    }
+}
