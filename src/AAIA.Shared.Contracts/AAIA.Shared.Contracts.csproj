@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -9,4 +9,25 @@
     <!-- NuGet Package Metadata -->
     <PackageId>AAIA.Shared.Contracts</PackageId>
     <Version>2.0.0</Version>
-    <A
+    <Authors>AndreAIAgent GmbH</Authors>
+    <Company>AndreAIAgent GmbH</Company>
+    <Description>Shared contracts, DTOs, and interfaces for the AAIA (Andre AI Agent) ecosystem. Use this package to build modules and plugins for AAIAS.</Description>
+    <RepositoryUrl>https://github.com/illeArts/aaia-sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>AAIA;AI;Agent;SDK;Contracts;Modules;Plugins</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>
