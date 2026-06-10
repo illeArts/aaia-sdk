@@ -8,6 +8,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for NuGet Trusted Publishing (OIDC)
 
     steps:
       - uses: actions/checkout@v4
@@ -34,17 +36,15 @@ jobs:
           /p:Version=${{ steps.version.outputs.VERSION }}
           -o ./artifacts
 
-      - name: Push to NuGet.org
+      - name: Push to NuGet.org (Trusted Publishing)
         run: >
           dotnet nuget push ./artifacts/*.nupkg
-          --api-key ${{ secrets.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
 
       - name: Push symbols
         run: >
           dotnet nuget push ./artifacts/*.snupkg
-          --api-key ${{ secrets.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
         continue-on-error: true
