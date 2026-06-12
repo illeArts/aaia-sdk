@@ -212,6 +212,127 @@ public sealed class ExtensionManifestTests
             SupportedPlatforms: ["windows"],
             Signing: null);
 
+    // ── Marketplace / Publisher-Validierung (v2.1) ──────────────────────────
+
+    [Theory]
+    [InlineData("ETW-1")]          // zu kurz
+    [InlineData("ETW-12345")]      // 5 Ziffern — Minimum ist 6
+    [InlineData("etw-000001")]     // lowercase
+    [InlineData("000001")]         // fehlendes Präfix
+    [InlineData("ETW_000001")]     // Unterstrich statt Bindestrich
+    public void Invalid_etw_id_format_is_rejected(string etwId)
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            PublisherEtwId = etwId
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.Contains(errors, e => e.Contains("ETW-NNNNNN", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Theory]
+    [InlineData("ETW-000001")]
+    [InlineData("ETW-123456")]
+    [InlineData("ETW-9999999")]    // 7 Ziffern — erlaubt
+    public void Valid_etw_id_format_passes(string etwId)
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            PublisherEtwId = etwId
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.DoesNotContain(errors, e => e.Contains("ETW", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Theory]
+    [InlineData(AaiaLicenseModel.Paid)]
+    [InlineData(AaiaLicenseModel.Subscription)]
+    public void Paid_license_model_requires_price(AaiaLicenseModel model)
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            LicenseModel     = model,
+            NuGetPackageId   = "AAIA.Modules.Test",
+            Price            = null   // fehlt absichtlich
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.Contains(errors, e => e.Contains("Price", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Theory]
+    [InlineData(AaiaLicenseModel.Paid)]
+    [InlineData(AaiaLicenseModel.Subscription)]
+    public void Paid_license_model_requires_nuget_package_id(AaiaLicenseModel model)
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            LicenseModel   = model,
+            Price          = 4.99m,
+            NuGetPackageId = null   // fehlt absichtlich
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.Contains(errors, e => e.Contains("NuGetPackageId", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void Negative_price_is_rejected()
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            LicenseModel   = AaiaLicenseModel.Paid,
+            NuGetPackageId = "AAIA.Modules.Test",
+            Price          = -1m
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.Contains(errors, e => e.Contains("negativ", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Theory]
+    [InlineData("not-a-url")]
+    [InlineData("ftp://example.com/screenshot.png")]   // nur http/https erlaubt
+    [InlineData("")]
+    public void Invalid_screenshot_url_is_rejected(string url)
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            Screenshots = [url]
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.Contains(errors, e => e.Contains("screenshot", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void Valid_marketplace_fields_produce_no_errors()
+    {
+        var manifest = ValidManifest(AaiaExtensionHost.AAIAS, [ServerReadPermission()]) with
+        {
+            PublisherEtwId = "ETW-000001",
+            LicenseModel   = AaiaLicenseModel.Paid,
+            NuGetPackageId = "AAIA.Modules.FritzBox",
+            Price          = 4.99m,
+            Currency       = "EUR",
+            Repository     = "https://github.com/illeArts/aaia-fritzbox",
+            IconUrl        = "https://cdn.example.com/icon.png",
+            Screenshots    = ["https://cdn.example.com/screen1.png", "https://cdn.example.com/screen2.png"]
+        };
+
+        var errors = AaiaExtensionManifestRules.Validate(manifest);
+
+        Assert.Empty(errors);
+    }
+
     private static AaiaExtensionPermissionDto ServerReadPermission() =>
         new(
             AaiaExtensionPermissionScope.ServerRead,

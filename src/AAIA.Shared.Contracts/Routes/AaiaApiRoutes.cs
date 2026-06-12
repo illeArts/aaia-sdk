@@ -233,4 +233,98 @@ public static class AaiaApiRoutes
         public const string SignedWhitelist   = "/api/security/whitelist/signed";
         public const string AgentWhitelist    = "/api/security/whitelist/{agentId}";
     }
+
+    // ── Marketplace API (aaia-marketplace-api — zentraler Webserver) ──────────
+
+    /// <summary>
+    /// Developer-Identity-Endpunkte der AAIA Marketplace API.
+    /// ETW-IDs leben ausschließlich hier — NIEMALS in einer lokalen AAIAS-DB.
+    /// </summary>
+    public static class Developers
+    {
+        public const string Register    = "/api/developers/register";
+        public const string Login       = "/api/developers/login";
+        public const string GetById     = "/api/developers/{etwId}";
+        public const string GetModules  = "/api/developers/{etwId}/modules";
+        /// <summary>Admin-Route: Öffentlichen Schlüssel eines Entwicklers hinterlegen.</summary>
+        public const string RegisterKey = "/api/admin/publisher-keys";
+    }
+
+    /// <summary>
+    /// Marketplace-Endpunkte: Modullisting, Publish, Lizenz-Checks.
+    /// Basis-Feed-Routen sind bereits in Extensions definiert —
+    /// diese Klasse ergänzt die erweiterten Marketplace-spezifischen Routen.
+    /// </summary>
+    public static class Marketplace
+    {
+        public const string Feed         = "/api/marketplace/feed";
+        public const string Modules      = "/api/marketplace/modules";
+        public const string ModuleById   = "/api/marketplace/modules/{id}";
+        public const string Publish      = "/api/marketplace/modules/{id}/publish";
+        public const string Developer    = "/api/marketplace/developers/{etwId}";
+        /// <summary>Alle Lizenzen des authentifizierten Käufers.</summary>
+        public const string MyLicenses   = "/api/marketplace/licenses";
+        /// <summary>Admin: Lizenz manuell zuweisen (Freikopien, Support-Kulanz).</summary>
+        public const string GrantLicense = "/api/marketplace/licenses/grant";
+        /// <summary>Prüft ob ein Käufer (Email) ein Modul lizenziert hat.</summary>
+        public const string LicenseCheck = "/api/marketplace/licenses/check";
+        /// <summary>Stripe Webhook — Eingang nach Kauf.</summary>
+        public const string StripeWebhook = "/api/marketplace/webhooks/stripe";
+
+        /// <summary>
+        /// POST — Erstellt eine Stripe Checkout-Session für ein Modul.
+        /// Body: <see cref="AAIA.Shared.Contracts.Marketplace.CreateCheckoutSessionRequest"/>.
+        /// Gibt <see cref="AAIA.Shared.Contracts.Marketplace.CheckoutSessionDto"/> zurück.
+        /// </summary>
+        public const string CreateCheckoutSession = "/api/marketplace/checkout";
+
+        // ── License-Token ────────────────────────────────────────────────────
+        /// <summary>
+        /// Gibt ein signiertes RS256-JWT für eine aktive Lizenz aus.
+        /// Token ist an ETW-ID + DeviceId + ModuleId gebunden.
+        /// AAIAS verifiziert das Token lokal ohne API-Call.
+        /// </summary>
+        public const string IssueLicenseToken = "/api/marketplace/licenses/token";
+
+        /// <summary>
+        /// Validiert ein Lizenz-Token ohne neues auszustellen.
+        /// Für AAIAS: prüft ob Token noch nicht revoked wurde.
+        /// </summary>
+        public const string ValidateLicenseToken = "/api/marketplace/licenses/token/validate";
+
+        // ── WooCommerce Bridge ───────────────────────────────────────────────
+        /// <summary>
+        /// POST — WooCommerce-Plugin ruft das nach Bestellabschluss auf.
+        /// Auth: X-Bridge-Key Header (kein JWT, Server-zu-Server).
+        /// Erstellt Lizenz in der Marketplace-DB und gibt LicenseKey + optional JWT zurück.
+        /// </summary>
+        public const string WooConfirmOrder = "/api/marketplace/orders/woocommerce/confirm";
+
+        /// <summary>
+        /// POST — WooCommerce-Plugin prüft ob ein Lizenz-Schlüssel noch aktiv ist.
+        /// Auth: X-Bridge-Key Header.
+        /// Fallback-Quelle für wp_aaia_licenses-Cache-Invalidierung.
+        /// </summary>
+        public const string WooVerifyLicense = "/api/marketplace/orders/woocommerce/verify";
+    }
+
+    /// <summary>
+    /// Revocation-List API.
+    /// AAIAS pollt diese regelmäßig und cached das Ergebnis lokal (24h).
+    /// Offline-Betrieb: AAIAS verwendet den Cache solange er gültig ist.
+    /// </summary>
+    public static class Revocations
+    {
+        /// <summary>Aktuelle vollständige Revocation-Liste (signiert, gecacht).</summary>
+        public const string List = "/api/revocations";
+
+        /// <summary>Nur Einträge neuer als ?since=&lt;sequenceNumber&gt;. Für Delta-Updates.</summary>
+        public const string Delta = "/api/revocations/delta";
+
+        /// <summary>Prüft ob ein spezifisches Modul/ETW/Key revoked ist.</summary>
+        public const string Check = "/api/revocations/check";
+
+        /// <summary>Admin: Neuen Revocation-Eintrag anlegen.</summary>
+        public const string Revoke = "/api/revocations";
+    }
 }

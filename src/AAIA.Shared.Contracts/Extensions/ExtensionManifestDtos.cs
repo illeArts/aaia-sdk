@@ -77,6 +77,28 @@ public enum AaiaSystemAccessLevel
     Control
 }
 
+/// <summary>
+/// Lizenzmodell eines Moduls / Plugins.
+/// Pflichtfeld für Marketplace-Veröffentlichung.
+/// </summary>
+public enum AaiaLicenseModel
+{
+    /// <summary>Kostenlos, ohne Einschränkungen.</summary>
+    Free,
+
+    /// <summary>Einmalzahlung — Dauerlizenz.</summary>
+    Paid,
+
+    /// <summary>Abonnement (monatlich / jährlich).</summary>
+    Subscription,
+
+    /// <summary>Kostenlos mit Ablaufdatum oder Funktionslimit.</summary>
+    Trial,
+
+    /// <summary>Nur Firmenlizenz / Preis auf Anfrage.</summary>
+    Enterprise
+}
+
 
 
 public sealed record AaiaExtensionManifestDto(
@@ -100,7 +122,38 @@ public sealed record AaiaExtensionManifestDto(
     /// <summary>Minimale AAIAS-Version (z. B. "0.5.0"). Null = keine Anforderung.</summary>
     string? MinAaiasVersion = null,
     /// <summary>Minimale AAIAC-Version. Null = keine Anforderung.</summary>
-    string? MinAaiacVersion = null);
+    string? MinAaiacVersion = null,
+
+    // ── Marketplace / Publisher-Felder (v2.1) ────────────────────────────────
+    // Alle optional — keine Breaking Changes für bestehende Module.
+    // Pflichtfelder für Marketplace-Veröffentlichung werden durch Validate() geprüft.
+
+    /// <summary>NuGet-Paket-ID. z.B. "AAIA.Modules.FritzBox". Pflicht für Marketplace-Publish.</summary>
+    string? NuGetPackageId = null,
+
+    /// <summary>Lizenzmodell. Pflicht für Marketplace-Publish.</summary>
+    AaiaLicenseModel? LicenseModel = null,
+
+    /// <summary>Preis (null = kostenlos). Pflicht wenn LicenseModel = Paid | Subscription.</summary>
+    decimal? Price = null,
+
+    /// <summary>Währung (ISO 4217). Default: "EUR".</summary>
+    string? Currency = null,
+
+    /// <summary>
+    /// ETW-ID des Entwicklers auf der AAIA Marketplace API. z.B. "ETW-000001".
+    /// Verknüpft das Manifest mit dem Developer-Account auf dem Webserver.
+    /// </summary>
+    string? PublisherEtwId = null,
+
+    /// <summary>GitHub-Repository-URL des Moduls.</summary>
+    string? Repository = null,
+
+    /// <summary>Icon-URL für die Marketplace-Detailseite.</summary>
+    string? IconUrl = null,
+
+    /// <summary>Screenshot-URLs für die Marketplace-Detailseite.</summary>
+    IReadOnlyList<string>? Screenshots = null);
 
 public sealed record AaiaExtensionPermissionDto(
     AaiaExtensionPermissionScope Scope,
@@ -391,6 +444,44 @@ public static class AaiaExtensionManifestRules
             !System.Version.TryParse(StripSemVerSuffix(manifest.MinAaiacVersion), out _))
         {
             errors.Add("minAaiacVersion muss ein gültiges Versionsformat haben (z. B. \"0.5.0\").");
+        }
+
+        // ── Marketplace / Publisher-Regeln (v2.1) ────────────────────────────
+
+        if (manifest.PublisherEtwId is not null &&
+            !System.Text.RegularExpressions.Regex.IsMatch(
+                manifest.PublisherEtwId, @"^ETW-\d{6,}$"))
+        {
+            errors.Add("publisherEtwId muss das Format ETW-NNNNNN haben (z. B. ETW-000001).");
+        }
+
+        if (manifest.LicenseModel is AaiaLicenseModel.Paid or AaiaLicenseModel.Subscription &&
+            manifest.Price is null)
+        {
+            errors.Add("Price ist Pflichtfeld wenn LicenseModel Paid oder Subscription ist.");
+        }
+
+        if (manifest.LicenseModel is AaiaLicenseModel.Paid or AaiaLicenseModel.Subscription &&
+            string.IsNullOrWhiteSpace(manifest.NuGetPackageId))
+        {
+            errors.Add("NuGetPackageId ist Pflichtfeld für kostenpflichtige Module.");
+        }
+
+        if (manifest.Price is < 0)
+        {
+            errors.Add("Price darf nicht negativ sein.");
+        }
+
+        if (manifest.Screenshots is not null)
+        {
+            foreach (var url in manifest.Screenshots)
+            {
+                if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+                    uri.Scheme is not ("http" or "https"))
+                {
+                    errors.Add($"screenshots enthält ungültige URL '{url}'.");
+                }
+            }
         }
 
         return errors;
