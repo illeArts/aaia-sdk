@@ -19,7 +19,9 @@
     <PackageTags>AAIA;AI;Agent;SDK;Contracts;Modules;Plugins</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- CS1591: fehlende XML-Docs auf public members — erst mit vollständiger Doc-Coverage aktivieren -->
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- CS1591: missing XML docs on public members -->
+    <!-- CS1587: XML comment not on valid language element (positional record params) -->
+    <NoWarn>$(NoWarn);CS1591;CS1587</NoWarn>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsPackable>true</IsPackable>
