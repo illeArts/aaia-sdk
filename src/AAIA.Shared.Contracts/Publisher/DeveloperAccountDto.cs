@@ -14,7 +14,10 @@ public enum DeveloperRole
     Professional,
 
     /// <summary>Von AAIA offiziell freigegeben. Zugriff auf sensible APIs.</summary>
-    TrustedDeveloper
+    TrustedDeveloper,
+
+    /// <summary>Plattform-Eigentümer. Vollzugriff auf alle Admin-Funktionen.</summary>
+    Owner
 }
 
 public enum DeveloperStatus
@@ -73,19 +76,26 @@ public sealed record DeveloperRegisterResponse(
     string        EtwId,
     string        DisplayName,
     DeveloperRole Role,
-    string        Message);
+    string        Message,
+    /// <summary>otpauth://totp/... URI für QR-Code-Scan. Nur einmalig bei Registrierung zurückgegeben.</summary>
+    string?       TotpUri    = null,
+    /// <summary>TOTP-Secret im Klartext für manuelle Eingabe in Authenticator-App.</summary>
+    string?       TotpSecret = null);
 
 /// <summary>Login-Anfrage gegen die Marketplace API.</summary>
 public sealed record DeveloperLoginRequest(
-    string Email,
-    string Password);
+    string  Email,
+    string  Password,
+    /// <summary>6-stelliger TOTP-Code aus der Authenticator-App. Pflichtfeld sobald 2FA aktiviert ist.</summary>
+    string? TotpCode = null);
 
 /// <summary>Login-Antwort mit JWT für nachfolgende API-Aufrufe.</summary>
 public sealed record DeveloperLoginResponse(
     string         EtwId,
     string         DisplayName,
     string         AccessToken,
-    DateTimeOffset ExpiresAt);
+    DateTimeOffset ExpiresAt,
+    DeveloperRole  Role = DeveloperRole.Community);
 
 // ── Publisher Certificate ─────────────────────────────────────────────────────
 
