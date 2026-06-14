@@ -10,8 +10,8 @@ namespace AAIA.Shared.Contracts.Marketplace;
 ///
 /// Registrierung in AAIAS:
 /// <code>
-///   services.AddHttpClient&lt;IMarketplaceLicenseClient, MarketplaceLicenseClient&gt;(c =>
-///       c.BaseAddress = new Uri(config["Marketplace:ApiUrl"]));
+///   services.AddHttpClient&lt;IMarketplaceLicenseClient, MarketplaceLicenseClient&gt;(c =&gt;
+///       c.BaseAddress = new Uri(config[&quot;Marketplace:ApiUrl&quot;]));
 /// </code>
 ///
 /// Der Endpunkt ist anonym — kein Bearer-Token nötig.
