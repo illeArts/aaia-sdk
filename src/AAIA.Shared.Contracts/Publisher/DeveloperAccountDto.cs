@@ -89,6 +89,16 @@ public sealed record DeveloperLoginRequest(
     /// <summary>6-stelliger TOTP-Code aus der Authenticator-App. Pflichtfeld sobald 2FA aktiviert ist.</summary>
     string? TotpCode = null);
 
+/// <summary>Stabile Auth-Fehlercodes für Clients. Meldungstexte dürfen lokalisiert werden.</summary>
+public static class DeveloperAuthErrorCodes
+{
+    public const string InvalidCredentials = "INVALID_CREDENTIALS";
+    public const string TotpRequired       = "TOTP_REQUIRED";
+    public const string TotpInvalid        = "TOTP_INVALID";
+    public const string AccountSuspended   = "ACCOUNT_SUSPENDED";
+    public const string AccountRevoked     = "ACCOUNT_REVOKED";
+}
+
 /// <summary>Login-Antwort mit JWT für nachfolgende API-Aufrufe.</summary>
 public sealed record DeveloperLoginResponse(
     string         EtwId,

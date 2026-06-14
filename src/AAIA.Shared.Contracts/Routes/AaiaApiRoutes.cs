@@ -244,6 +244,7 @@ public static class AaiaApiRoutes
     {
         public const string Register    = "/api/developers/register";
         public const string Login       = "/api/developers/login";
+        public const string VerifyTotp  = "/api/developers/verify-totp";
         public const string GetById     = "/api/developers/{etwId}";
         public const string GetModules  = "/api/developers/{etwId}/modules";
         /// <summary>Admin-Route: Öffentlichen Schlüssel eines Entwicklers hinterlegen.</summary>
@@ -279,6 +280,15 @@ public static class AaiaApiRoutes
         public const string CreateCheckoutSession = "/api/marketplace/checkout";
 
         // ── License-Token ────────────────────────────────────────────────────
+
+        /// <summary>
+        /// POST — Aktiviert eine WooCommerce-Lizenz im Module Manager.
+        /// Kein JWT erforderlich — LicenseKey + BuyerEmail sind das Credential.
+        /// Rate-Limit: 5 req/min/IP.
+        /// Gibt LicenseJwt (Module/Plugin) oder DownloadUrl (LanguagePack) zurück.
+        /// </summary>
+        public const string ActivateLicense = "/api/marketplace/licenses/activate";
+
         /// <summary>
         /// Gibt ein signiertes RS256-JWT für eine aktive Lizenz aus.
         /// Token ist an ETW-ID + DeviceId + ModuleId gebunden.
@@ -318,13 +328,4 @@ public static class AaiaApiRoutes
         /// <summary>Aktuelle vollständige Revocation-Liste (signiert, gecacht).</summary>
         public const string List = "/api/revocations";
 
-        /// <summary>Nur Einträge neuer als ?since=&lt;sequenceNumber&gt;. Für Delta-Updates.</summary>
-        public const string Delta = "/api/revocations/delta";
-
-        /// <summary>Prüft ob ein spezifisches Modul/ETW/Key revoked ist.</summary>
-        public const string Check = "/api/revocations/check";
-
-        /// <summary>Admin: Neuen Revocation-Eintrag anlegen.</summary>
-        public const string Revoke = "/api/revocations";
-    }
-}
+        /// <summary>Nur Einträge neuer al
