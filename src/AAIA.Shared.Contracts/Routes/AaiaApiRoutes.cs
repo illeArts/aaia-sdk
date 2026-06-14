@@ -316,6 +316,13 @@ public static class AaiaApiRoutes
         /// Fallback-Quelle für wp_aaia_licenses-Cache-Invalidierung.
         /// </summary>
         public const string WooVerifyLicense = "/api/marketplace/orders/woocommerce/verify";
+
+        /// <summary>
+        /// GET — Öffentlicher RSA-Schlüssel (PEM) für die Offline-JWT-Verifikation in AAIAS.
+        /// Kein Auth erforderlich — der Key ist öffentlich.
+        /// AAIAS cached diesen Key (24h) und verifiziert Lizenz-Tokens damit lokal.
+        /// </summary>
+        public const string PublicKey = "/api/marketplace/public-key";
     }
 
     /// <summary>
@@ -328,4 +335,13 @@ public static class AaiaApiRoutes
         /// <summary>Aktuelle vollständige Revocation-Liste (signiert, gecacht).</summary>
         public const string List = "/api/revocations";
 
-        /// <summary>Nur Einträge neuer al
+        /// <summary>Nur Einträge neuer als ?since=&lt;sequenceNumber&gt;. Für Delta-Updates.</summary>
+        public const string Delta = "/api/revocations/delta";
+
+        /// <summary>Prüft ob ein spezifisches Modul/ETW/Key revoked ist.</summary>
+        public const string Check = "/api/revocations/check";
+
+        /// <summary>Admin: Neuen Revocation-Eintrag anlegen.</summary>
+        public const string Revoke = "/api/revocations";
+    }
+}
