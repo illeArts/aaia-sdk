@@ -99,12 +99,14 @@ public static class DeveloperAuthErrorCodes
     public const string AccountRevoked     = "ACCOUNT_REVOKED";
 }
 
-/// <summary>Login-Antwort mit JWT für nachfolgende API-Aufrufe.</summary>
+/// <summary>
+/// Login-Antwort mit JWT für nachfolgende API-Aufrufe.
+/// ExpiresAt ist nullable — das WP-Backend liefert kein expiresAt-Feld.
+/// </summary>
 public sealed record DeveloperLoginResponse(
     string          EtwId,
     string          DisplayName,
     string          AccessToken,
-    /// <summary>Ablaufzeit des Tokens. Null wenn der Server kein expiresAt-Feld liefert (WP-Backend).</summary>
     DateTimeOffset? ExpiresAt,
     DeveloperRole   Role = DeveloperRole.Community);
 
@@ -120,4 +122,7 @@ public sealed record RegisterPublisherKeyRequest(
     string Algorithm = "RSA-PSS-SHA256");
 
 /// <summary>Antwort nach Key-Registrierung.</summary>
-public sealed recor
+public sealed record RegisterPublisherKeyResponse(
+    string         KeyId,
+    string         EtwId,
+    DateTimeOffset RegisteredAt);
