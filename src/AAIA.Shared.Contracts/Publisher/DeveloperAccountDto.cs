@@ -101,11 +101,12 @@ public static class DeveloperAuthErrorCodes
 
 /// <summary>Login-Antwort mit JWT für nachfolgende API-Aufrufe.</summary>
 public sealed record DeveloperLoginResponse(
-    string         EtwId,
-    string         DisplayName,
-    string         AccessToken,
-    DateTimeOffset ExpiresAt,
-    DeveloperRole  Role = DeveloperRole.Community);
+    string          EtwId,
+    string          DisplayName,
+    string          AccessToken,
+    /// <summary>Ablaufzeit des Tokens. Null wenn der Server kein expiresAt-Feld liefert (WP-Backend).</summary>
+    DateTimeOffset? ExpiresAt,
+    DeveloperRole   Role = DeveloperRole.Community);
 
 // ── Publisher Certificate ─────────────────────────────────────────────────────
 
@@ -119,7 +120,4 @@ public sealed record RegisterPublisherKeyRequest(
     string Algorithm = "RSA-PSS-SHA256");
 
 /// <summary>Antwort nach Key-Registrierung.</summary>
-public sealed record RegisterPublisherKeyResponse(
-    string         KeyId,
-    string         EtwId,
-    DateTimeOffset RegisteredAt);
+public sealed recor
