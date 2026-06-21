@@ -97,13 +97,15 @@ public sealed record CheckoutSessionDto(
 /// Auth: X-Bridge-Key Header (serverseitiger API-Schlüssel).
 /// </summary>
 public sealed record WooOrderConfirmRequest(
-    int     WcOrderId,
+    int      WcOrderId,
     /// <summary>_aaia_product_code aus WooCommerce-Produkt-Meta.</summary>
-    string  ProductCode,
-    string  BuyerEmail,
-    int?    BuyerWpUserId = null,
+    string   ProductCode,
+    string   BuyerEmail,
+    int?     BuyerWpUserId = null,
     /// <summary>Optional — wenn vorhanden wird ein JWT-Token ausgestellt.</summary>
-    string? DeviceId = null);
+    string?  DeviceId = null,
+    /// <summary>Bestellsumme aus WooCommerce (inkl. MwSt.) — für die Rechnung.</summary>
+    decimal? WcOrderTotal = null);
 
 /// <summary>Antwort nach Lizenz-Bestätigung durch die Marketplace-API.</summary>
 public sealed record WooOrderConfirmResponse(
