@@ -16,6 +16,9 @@ public enum DeveloperRole
     /// <summary>Von AAIA offiziell freigegeben. Zugriff auf sensible APIs.</summary>
     TrustedDeveloper,
 
+    /// <summary>Plattform-Administrator. Erweiterte Marketplace-Verwaltung.</summary>
+    Admin,
+
     /// <summary>Plattform-Eigentümer. Vollzugriff auf alle Admin-Funktionen.</summary>
     Owner
 }
