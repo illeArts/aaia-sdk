@@ -253,6 +253,39 @@ public static class AaiaApiRoutes
         public const string Delete      = "/api/developers/{etwId}/delete";
         /// <summary>Admin-Route: Öffentlichen Schlüssel eines Entwicklers hinterlegen.</summary>
         public const string RegisterKey = "/api/admin/publisher-keys";
+
+        // ── Phase 5.9: Developer Marketplace Dashboard ────────────────────────
+
+        /// <summary>
+        /// GET — Übersicht aller eigenen Extensions inkl. Lizenz- und Verkaufsstatistiken.
+        /// JWT (Developer/Partner/Owner) erforderlich.
+        /// Gibt <see cref="AAIA.Shared.Contracts.Marketplace.DeveloperDashboardDto"/> zurück.
+        /// </summary>
+        public const string Dashboard = "/api/developer/dashboard";
+
+        /// <summary>
+        /// GET — Alle Extensions des authentifizierten Entwicklers.
+        /// Gibt IEnumerable&lt;DeveloperExtensionSummaryDto&gt; zurück.
+        /// </summary>
+        public const string MyExtensions = "/api/developer/extensions";
+
+        /// <summary>
+        /// GET — Verkaufsstatistiken einer Extension (aus MoR-Webhooks).
+        /// Geschätzte Werte — kein Ersatz für MoR-Abrechnung.
+        /// </summary>
+        public const string ExtensionSalesSummary = "/api/developer/extensions/{extensionId}/sales-summary";
+
+        /// <summary>
+        /// GET — Lizenzliste einer Extension (Käufer-Email anonymisiert, Statuszähler).
+        /// Paginiert: ?page=1&amp;pageSize=50.
+        /// </summary>
+        public const string ExtensionLicenses = "/api/developer/extensions/{extensionId}/licenses";
+
+        /// <summary>
+        /// GET — Letzte MoR-Webhook-Events für eine Extension (max. 50).
+        /// Für Debugging von Zahlungsflüssen und fehlenden Lizenzen.
+        /// </summary>
+        public const string ExtensionWebhookEvents = "/api/developer/extensions/{extensionId}/webhook-events";
     }
 
     /// <summary>
@@ -424,36 +457,4 @@ public static class AaiaApiRoutes
         /// GET — Details zu einer spezifischen Lizenz des Käufers.
         /// Käufer-JWT erforderlich. 404 wenn Lizenz einem anderen Käufer gehört.
         /// </summary>
-        public const string LicenseById   = "/api/account/licenses/{licenseId}";
-
-        /// <summary>
-        /// POST — Neuen Claim-Token anfordern (falls abgelaufen oder Mail verloren).
-        /// Body: ResendClaimRequest (licenseKey + buyerEmail).
-        /// Rate-Limit: 3 req/10min.
-        /// </summary>
-        public const string ResendClaim   = "/api/account/licenses/resend-claim";
-    }
-
-    // ── Admin API (Phase 5.6) ─────────────────────────────────────────────────
-
-    /// <summary>
-    /// Admin-Endpunkte für die Verwaltung von MoR-Mappings, Webhook-Events und Lizenzen.
-    /// Nur Accounts mit Role = "Owner" haben Zugriff.
-    /// </summary>
-    public static class Admin
-    {
-        // MoR Product Mappings
-        /// <summary>GET (list, filter) + POST (create) für MorProductMapping.</summary>
-        public const string MorMappings     = "/api/admin/mor/mappings";
-        /// <summary>PUT (update) + DELETE (soft/hard) für einzelnes Mapping.</summary>
-        public const string MorMappingById  = "/api/admin/mor/mappings/{id:int}";
-
-        // Webhook-Event-Log
-        /// <summary>GET — Paginierter Log aller MoR-Webhook-Events (inkl. Filter).</summary>
-        public const string MorEvents       = "/api/admin/mor/events";
-        /// <summary>GET — Einzelnes Event inkl. RawPayload.</summary>
-        public const string MorEventById    = "/api/admin/mor/events/{id:int}";
-
-        // Lizenz-Ablauf-Job
-        /// <summary>POST — Manueller Trigger: setzt abgelaufene Lizenzen auf Expired.</summary>
-        public const string ExpireDueLicen
+        public const string LicenseById   = "/
