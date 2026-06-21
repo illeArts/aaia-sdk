@@ -245,8 +245,12 @@ public static class AaiaApiRoutes
         public const string Register    = "/api/developers/register";
         public const string Login       = "/api/developers/login";
         public const string VerifyTotp  = "/api/developers/verify-totp";
+        /// <summary>Profil des aktuell eingeloggten Entwicklers (JWT erforderlich).</summary>
+        public const string Me          = "/api/developers/me";
         public const string GetById     = "/api/developers/{etwId}";
         public const string GetModules  = "/api/developers/{etwId}/modules";
+        /// <summary>Löscht einen Pending-Account (kein JWT — nur für Registrierungsabbruch).</summary>
+        public const string Delete      = "/api/developers/{etwId}/delete";
         /// <summary>Admin-Route: Öffentlichen Schlüssel eines Entwicklers hinterlegen.</summary>
         public const string RegisterKey = "/api/admin/publisher-keys";
     }
@@ -278,6 +282,25 @@ public static class AaiaApiRoutes
         /// Gibt <see cref="AAIA.Shared.Contracts.Marketplace.CheckoutSessionDto"/> zurück.
         /// </summary>
         public const string CreateCheckoutSession = "/api/marketplace/checkout";
+
+        // ── Checkout / Pricing (Phase 5.7a) ──────────────────────────────────
+
+        /// <summary>
+        /// GET — Checkout-Informationen zu einer Extension: Preis, CheckoutUrl, MoR-Provider.
+        /// Kein Auth erforderlich — öffentlich.
+        /// WooCommerce und Module Manager nutzen diesen Endpunkt für den "Kaufen"-Button.
+        /// </summary>
+        public const string ExtensionCheckout = "/api/marketplace/extensions/{extensionId}/checkout";
+
+        // ── License Status (Phase 5.7b) ───────────────────────────────────────
+
+        /// <summary>
+        /// GET — Lizenzstatus des authentifizierten Käufers für eine Extension.
+        /// Bearer JWT (email-Claim) erforderlich.
+        /// Antwort: HasLicense, Status, ExpiresAt, LicenseModel, CanDownload, CheckoutUrl.
+        /// Module Manager nutzt diesen Endpunkt für den "Lizenz prüfen"-Button.
+        /// </summary>
+        public const string ExtensionLicenseStatus = "/api/marketplace/extensions/{extensionId}/license-status";
 
         // ── License-Token ────────────────────────────────────────────────────
 
@@ -323,6 +346,96 @@ public static class AaiaApiRoutes
         /// AAIAS cached diesen Key (24h) und verifiziert Lizenz-Tokens damit lokal.
         /// </summary>
         public const string PublicKey = "/api/marketplace/public-key";
+
+        // ── Registry (Phase 5.2) ─────────────────────────────────────────────────
+
+        /// <summary>GET — Öffentliche Extension-Liste (nur IsPublished=true).</summary>
+        public const string RegistryList     = "/api/marketplace/extensions";
+
+        /// <summary>GET — Details zu einer Extension (neueste Published Release).</summary>
+        public const string RegistryById     = "/api/marketplace/extensions/{extensionId}";
+
+        /// <summary>GET — Alle Releases einer Extension (nur Published, nach Version sortiert).</summary>
+        public const string RegistryReleases = "/api/marketplace/extensions/{extensionId}/releases";
+
+        /// <summary>GET — Details zu einem bestimmten Release.</summary>
+        public const string RegistryRelease  = "/api/marketplace/extensions/{extensionId}/releases/{version}";
+
+        /// <summary>
+        /// POST — Verifiziertes Release öffentlich schalten (MarketplaceVerified → IsPublished=true).
+        /// JWT (Developer, derselbe wie Publisher) erforderlich.
+        /// </summary>
+        public const string PublishRelease   = "/api/marketplace/extensions/{extensionId}/releases/{version}/publish";
+
+        // ── Download (Phase 5.3) ──────────────────────────────────────────────
+
+        /// <summary>
+        /// GET — Lädt das .aaiaext-Paket eines veröffentlichten Releases herunter.
+        /// Anonym zugänglich (kein JWT erforderlich für freie Extensions).
+        /// Antwort: application/octet-stream mit SHA256- und Fingerprint-Header.
+        /// Header: X-Package-Sha256, X-Key-Fingerprint, X-Signature-Version, X-Trust-Level.
+        /// </summary>
+        public const string DownloadRelease = "/api/marketplace/extensions/{extensionId}/releases/{version}/download";
+
+        // ── Signed Upload (Phase 5.1) ─────────────────────────────────────────
+
+        /// <summary>
+        /// POST multipart/form-data — ETW-signiertes Extension-Paket hochladen.
+        /// JWT (Developer) erforderlich. Synchrone Verifikation im Request.
+        /// Felder: extensionId, version, developerEtwId, keyFingerprint, trustLevel, signatureVersion,
+        ///         package (.aaiaext), signatureInfo (signature-info.json),
+        ///         [releaseInfo], [inspectionReport].
+        /// Gibt <see cref="AAIA.Shared.Contracts.Marketplace.SignedUploadResponse"/> zurück.
+        /// </summary>
+        public const string UploadSigned = "/api/marketplace/extensions/upload-signed";
+    }
+
+    // ── Admin API (Phase 5.6) ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// Admin-Endpunkte für die Verwaltung von MoR-Mappings, Webhook-Events und Lizenzen.
+    /// Nur Accounts mit Role = "Owner" haben Zugriff.
+    /// </summary>
+    public static class Admin
+    {
+        // MoR Product Mappings
+        /// <summary>GET (list, filter) + POST (create) für MorProductMapping.</summary>
+        public const string MorMappings     = "/api/admin/mor/mappings";
+        /// <summary>PUT (update) + DELETE (soft/hard) für einzelnes Mapping.</summary>
+        public const string MorMappingById  = "/api/admin/mor/mappings/{id:int}";
+
+        // Webhook-Event-Log
+        /// <summary>GET — Paginierter Log aller MoR-Webhook-Events (inkl. Filter).</summary>
+        public const string MorEvents       = "/api/admin/mor/events";
+        /// <summary>GET — Einzelnes Event inkl. RawPayload.</summary>
+        public const string MorEventById    = "/api/admin/mor/events/{id:int}";
+
+        // Lizenz-Ablauf-Job
+        /// <summary>POST — Manueller Trigger: setzt abgelaufene Lizenzen auf Expired.</summary>
+        public const string ExpireDueLicenses = "/api/admin/licenses/expire-due";
+
+        // Extension-Pricing (Phase 5.7a)
+        /// <summary>PUT — Preis, Währung und CheckoutUrl einer Extension setzen. Owner only.</summary>
+        public const string SetExtensionPricing = "/api/admin/extensions/{extensionId}/pricing";
+
+        // Publisher-Keys (bereits vorhanden, hier für Vollständigkeit)
+        /// <summary>POST — Öffentlichen ETW-Schlüssel eines Entwicklers hinterlegen.</summary>
+        public const string RegisterPublisherKey = "/api/admin/publisher-keys";
+    }
+
+    // ── MoR Webhooks (Phase 5.5) ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Webhook-Endpoints für Merchant of Record Anbieter.
+    /// Beide Endpoints sind öffentlich (kein JWT) — Authentifizierung via HMAC-Signatur.
+    /// </summary>
+    public static class Mor
+    {
+        /// <summary>POST — Lemon Squeezy Webhook. Header: X-Signature (HMAC-SHA256).</summary>
+        public const string LemonSqueezyWebhook = "/api/mor/lemonsqueezy/webhook";
+
+        /// <summary>POST — Paddle Billing v2 Webhook. Header: Paddle-Signature (ts=...;h1=...).</summary>
+        public const string PaddleWebhook        = "/api/mor/paddle/webhook";
     }
 
     /// <summary>
