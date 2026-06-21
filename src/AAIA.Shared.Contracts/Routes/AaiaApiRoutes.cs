@@ -457,4 +457,63 @@ public static class AaiaApiRoutes
         /// GET — Details zu einer spezifischen Lizenz des Käufers.
         /// Käufer-JWT erforderlich. 404 wenn Lizenz einem anderen Käufer gehört.
         /// </summary>
-        public const string LicenseById   = "/
+        public const string LicenseById   = "/api/account/licenses/{licenseId}";
+
+        /// <summary>
+        /// POST — Neuen Claim-Token anfordern (falls abgelaufen oder Mail verloren).
+        /// Body: ResendClaimRequest (licenseKey + buyerEmail).
+        /// Rate-Limit: 3 req/10min.
+        /// </summary>
+        public const string ResendClaim   = "/api/account/licenses/resend-claim";
+    }
+
+    // ── Admin API (Phase 5.6) ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// Admin-Endpunkte für die Verwaltung von MoR-Mappings, Webhook-Events und Lizenzen.
+    /// Nur Accounts mit Role = "Owner" haben Zugriff.
+    /// </summary>
+    public static class Admin
+    {
+        // MoR Product Mappings
+        /// <summary>GET (list, filter) + POST (create) für MorProductMapping.</summary>
+        public const string MorMappings     = "/api/admin/mor/mappings";
+        /// <summary>PUT (update) + DELETE (soft/hard) für einzelnes Mapping.</summary>
+        public const string MorMappingById  = "/api/admin/mor/mappings/{id:int}";
+
+        // Webhook-Event-Log
+        /// <summary>GET — Paginierter Log aller MoR-Webhook-Events (inkl. Filter).</summary>
+        public const string MorEvents       = "/api/admin/mor/events";
+        /// <summary>GET — Einzelnes Event inkl. RawPayload.</summary>
+        public const string MorEventById    = "/api/admin/mor/events/{id:int}";
+
+        // Lizenz-Ablauf-Job
+        /// <summary>POST — Manueller Trigger: setzt abgelaufene Lizenzen auf Expired.</summary>
+        public const string ExpireDueLicenses = "/api/admin/licenses/expire-due";
+
+        // Extension-Pricing (Phase 5.7a)
+        /// <summary>PUT — Preis, Währung und CheckoutUrl einer Extension setzen. Owner only.</summary>
+        public const string SetExtensionPricing = "/api/admin/extensions/{extensionId}/pricing";
+
+        // Publisher-Keys (bereits vorhanden, hier für Vollständigkeit)
+        /// <summary>POST — Öffentlichen ETW-Schlüssel eines Entwicklers hinterlegen.</summary>
+        public const string RegisterPublisherKey = "/api/admin/publisher-keys";
+
+        // ── Phase 5.10: Marketplace Console (Owner/Admin) ──────────────────────
+        /// <summary>GET — Aggregierte Plattformübersicht (Counts, Webhook-Stats).</summary>
+        public const string MarketplaceOverview   = "/api/admin/marketplace/overview";
+        /// <summary>GET — Paginierte Extensions-Liste mit Risk-Ampel.</summary>
+        public const string AdminExtensions       = "/api/admin/marketplace/extensions";
+        /// <summary>GET — Detailansicht einer einzelnen Extension.</summary>
+        public const string AdminExtensionById    = "/api/admin/marketplace/extensions/{extensionId}";
+        /// <summary>GET — Paginierte Entwickler-Liste.</summary>
+        public const string AdminDevelopers       = "/api/admin/marketplace/developers";
+        /// <summary>GET — Entwickler-Detailansicht mit Extension-Liste.</summary>
+        public const string AdminDeveloperByEtwId = "/api/admin/marketplace/developers/{etwId}";
+        /// <summary>GET — Paginierte Lizenz-Liste (alle Käufer, filterbar).</summary>
+        public const string AdminLicenses         = "/api/admin/marketplace/licenses";
+        /// <summary>GET — Releases im Status PendingReview (TrustLevel=MarketplaceVerified, !Published).</summary>
+        public const string PendingReviews        = "/api/admin/marketplace/releases/pending-review";
+        /// <summary>POST — Release sperren (Owner only). Body: BlockReleaseRequest.</summary>
+        public const string BlockRelease          = "/api/admin/marketplace/releases/{releaseId:int}/block";
+        /// <summary>POST — Relea
