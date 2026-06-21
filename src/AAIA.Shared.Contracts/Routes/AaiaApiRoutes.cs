@@ -390,6 +390,50 @@ public static class AaiaApiRoutes
         public const string UploadSigned = "/api/marketplace/extensions/upload-signed";
     }
 
+    // ── Käuferkonto / Buyer Account (Phase 5.8) ───────────────────────────────
+
+    /// <summary>
+    /// Endpunkte für Käuferkonten (kein ETW-Workflow, eigener JWT mit Role="User").
+    /// Käufer registrieren sich auf der Webseite oder per E-Mail-Link.
+    /// </summary>
+    public static class BuyerAccount
+    {
+        /// <summary>POST — Neues Käuferkonto anlegen. Body: BuyerRegisterRequest.</summary>
+        public const string Register = "/api/account/register";
+
+        /// <summary>POST — Login. Body: BuyerLoginRequest. Gibt BuyerTokenResponse zurück.</summary>
+        public const string Login    = "/api/account/login";
+
+        // ── Lizenzen ──────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// POST — Einmal-Claim-Token einlösen und Lizenz dem Käuferkonto zuordnen.
+        /// Body: BuyerClaimLicenseRequest (token).
+        /// Käufer-JWT erforderlich (Role = "User").
+        /// Rate-Limit: 10 req/min — verhindert Brute-Force auf Claim-Token.
+        /// </summary>
+        public const string ClaimLicense  = "/api/account/licenses/claim";
+
+        /// <summary>
+        /// GET — Alle Lizenzen des authentifizierten Käufers.
+        /// Käufer-JWT erforderlich. Gibt IEnumerable&lt;BuyerLicenseDto&gt; zurück.
+        /// </summary>
+        public const string ListLicenses  = "/api/account/licenses";
+
+        /// <summary>
+        /// GET — Details zu einer spezifischen Lizenz des Käufers.
+        /// Käufer-JWT erforderlich. 404 wenn Lizenz einem anderen Käufer gehört.
+        /// </summary>
+        public const string LicenseById   = "/api/account/licenses/{licenseId}";
+
+        /// <summary>
+        /// POST — Neuen Claim-Token anfordern (falls abgelaufen oder Mail verloren).
+        /// Body: ResendClaimRequest (licenseKey + buyerEmail).
+        /// Rate-Limit: 3 req/10min.
+        /// </summary>
+        public const string ResendClaim   = "/api/account/licenses/resend-claim";
+    }
+
     // ── Admin API (Phase 5.6) ─────────────────────────────────────────────────
 
     /// <summary>
@@ -412,49 +456,4 @@ public static class AaiaApiRoutes
 
         // Lizenz-Ablauf-Job
         /// <summary>POST — Manueller Trigger: setzt abgelaufene Lizenzen auf Expired.</summary>
-        public const string ExpireDueLicenses = "/api/admin/licenses/expire-due";
-
-        // Extension-Pricing (Phase 5.7a)
-        /// <summary>PUT — Preis, Währung und CheckoutUrl einer Extension setzen. Owner only.</summary>
-        public const string SetExtensionPricing = "/api/admin/extensions/{extensionId}/pricing";
-
-        // Publisher-Keys (bereits vorhanden, hier für Vollständigkeit)
-        /// <summary>POST — Öffentlichen ETW-Schlüssel eines Entwicklers hinterlegen.</summary>
-        public const string RegisterPublisherKey = "/api/admin/publisher-keys";
-    }
-
-    // ── MoR Webhooks (Phase 5.5) ──────────────────────────────────────────────
-
-    /// <summary>
-    /// Webhook-Endpoints für Merchant of Record Anbieter.
-    /// Beide Endpoints sind öffentlich (kein JWT) — Authentifizierung via HMAC-Signatur.
-    /// </summary>
-    public static class Mor
-    {
-        /// <summary>POST — Lemon Squeezy Webhook. Header: X-Signature (HMAC-SHA256).</summary>
-        public const string LemonSqueezyWebhook = "/api/mor/lemonsqueezy/webhook";
-
-        /// <summary>POST — Paddle Billing v2 Webhook. Header: Paddle-Signature (ts=...;h1=...).</summary>
-        public const string PaddleWebhook        = "/api/mor/paddle/webhook";
-    }
-
-    /// <summary>
-    /// Revocation-List API.
-    /// AAIAS pollt diese regelmäßig und cached das Ergebnis lokal (24h).
-    /// Offline-Betrieb: AAIAS verwendet den Cache solange er gültig ist.
-    /// </summary>
-    public static class Revocations
-    {
-        /// <summary>Aktuelle vollständige Revocation-Liste (signiert, gecacht).</summary>
-        public const string List = "/api/revocations";
-
-        /// <summary>Nur Einträge neuer als ?since=&lt;sequenceNumber&gt;. Für Delta-Updates.</summary>
-        public const string Delta = "/api/revocations/delta";
-
-        /// <summary>Prüft ob ein spezifisches Modul/ETW/Key revoked ist.</summary>
-        public const string Check = "/api/revocations/check";
-
-        /// <summary>Admin: Neuen Revocation-Eintrag anlegen.</summary>
-        public const string Revoke = "/api/revocations";
-    }
-}
+        public const string ExpireDueLicen
