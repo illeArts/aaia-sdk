@@ -510,10 +510,48 @@ public static class AaiaApiRoutes
         public const string AdminDevelopers       = "/api/admin/marketplace/developers";
         /// <summary>GET — Entwickler-Detailansicht mit Extension-Liste.</summary>
         public const string AdminDeveloperByEtwId = "/api/admin/marketplace/developers/{etwId}";
-        /// <summary>GET — Paginierte Lizenz-Liste (alle Käufer, filterbar).</summary>
+        /// <summary>GET — Paginierte Lizenz-Liste (alle Kaeufer, filterbar).</summary>
         public const string AdminLicenses         = "/api/admin/marketplace/licenses";
-        /// <summary>GET — Releases im Status PendingReview (TrustLevel=MarketplaceVerified, !Published).</summary>
+        /// <summary>GET — Releases im Status PendingReview.</summary>
         public const string PendingReviews        = "/api/admin/marketplace/releases/pending-review";
-        /// <summary>POST — Release sperren (Owner only). Body: BlockReleaseRequest.</summary>
+        /// <summary>POST — Release sperren (Owner only).</summary>
         public const string BlockRelease          = "/api/admin/marketplace/releases/{releaseId:int}/block";
-        /// <summary>POST — Relea
+        /// <summary>POST — Release-Sperre aufheben (Owner only).</summary>
+        public const string UnblockRelease        = "/api/admin/marketplace/releases/{releaseId:int}/unblock";
+    }
+
+    // ── MoR Webhooks (Phase 5.5) ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Webhook-Endpoints für Merchant of Record Anbieter.
+    /// Beide Endpoints sind öffentlich (kein JWT) — Authentifizierung via HMAC-Signatur.
+    /// </summary>
+    public static class Mor
+    {
+        /// <summary>POST — Lemon Squeezy Webhook. Header: X-Signature (HMAC-SHA256).</summary>
+        public const string LemonSqueezyWebhook = "/api/mor/lemonsqueezy/webhook";
+
+        /// <summary>POST — Paddle Billing v2 Webhook. Header: Paddle-Signature (ts=...;h1=...).</summary>
+        public const string PaddleWebhook        = "/api/mor/paddle/webhook";
+    }
+
+    /// <summary>
+    /// Revocation-List API.
+    /// AAIAS pollt diese regelmäßig und cached das Ergebnis lokal (24h).
+    /// Offline-Betrieb: AAIAS verwendet den Cache solange er gültig ist.
+    /// </summary>
+    public static class Revocations
+    {
+        /// <summary>Aktuelle vollständige Revocation-Liste (signiert, gecacht).</summary>
+        public const string List = "/api/revocations";
+
+        /// <summary>Nur Einträge neuer als ?since=&lt;sequenceNumber&gt;. Für Delta-Updates.</summary>
+        public const string Delta = "/api/revocations/delta";
+
+        /// <summary>Prüft ob ein spezifisches Modul/ETW/Key revoked ist.</summary>
+        public const string Check = "/api/revocations/check";
+
+        /// <summary>Admin: Neuen Revocation-Eintrag anlegen.</summary>
+        public const string Revoke = "/api/revocations";
+    }
+}
