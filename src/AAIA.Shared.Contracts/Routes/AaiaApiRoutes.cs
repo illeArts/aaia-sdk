@@ -286,6 +286,21 @@ public static class AaiaApiRoutes
         /// Für Debugging von Zahlungsflüssen und fehlenden Lizenzen.
         /// </summary>
         public const string ExtensionWebhookEvents = "/api/developer/extensions/{extensionId}/webhook-events";
+
+        // ── Phase 5.11: MoR Status ────────────────────────────────────────────
+        /// <summary>
+        /// GET — MoR-Verbindungsstatus des aktuellen Entwicklers.
+        /// Gibt an ob Provider verbunden, Webhook gesund und Checkout aktiv ist.
+        /// Enthält keine Bank- oder Steuerdaten.
+        /// </summary>
+        public const string MorStatus   = "/api/developer/mor/status";
+
+        /// <summary>
+        /// PUT — CheckoutUrl einer Extension aktualisieren.
+        /// Body: MorProviderUpdateRequest (extensionId + checkoutUrl).
+        /// JWT (Developer, Owner des Moduls) erforderlich.
+        /// </summary>
+        public const string MorProvider = "/api/developer/mor/provider";
     }
 
     /// <summary>
@@ -421,21 +436,6 @@ public static class AaiaApiRoutes
         /// Gibt <see cref="AAIA.Shared.Contracts.Marketplace.SignedUploadResponse"/> zurück.
         /// </summary>
         public const string UploadSigned = "/api/marketplace/extensions/upload-signed";
-
-        // ── Phase 5.11: MoR Status ────────────────────────────────────────────
-        /// <summary>
-        /// GET — MoR-Verbindungsstatus des aktuellen Entwicklers.
-        /// Gibt an ob Provider verbunden, Webhook gesund und Checkout aktiv ist.
-        /// Enthält keine Bank- oder Steuerdaten.
-        /// </summary>
-        public const string MorStatus   = "/api/developer/mor/status";
-
-        /// <summary>
-        /// PUT — CheckoutUrl einer Extension aktualisieren.
-        /// Body: MorProviderUpdateRequest (extensionId + checkoutUrl).
-        /// JWT (Developer, Owner des Moduls) erforderlich.
-        /// </summary>
-        public const string MorProvider = "/api/developer/mor/provider";
     }
 
     // ── Käuferkonto / Buyer Account (Phase 5.8) ───────────────────────────────
