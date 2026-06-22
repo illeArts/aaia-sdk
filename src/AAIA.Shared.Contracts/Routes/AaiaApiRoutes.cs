@@ -421,6 +421,21 @@ public static class AaiaApiRoutes
         /// Gibt <see cref="AAIA.Shared.Contracts.Marketplace.SignedUploadResponse"/> zurück.
         /// </summary>
         public const string UploadSigned = "/api/marketplace/extensions/upload-signed";
+
+        // ── Phase 5.11: MoR Status ────────────────────────────────────────────
+        /// <summary>
+        /// GET — MoR-Verbindungsstatus des aktuellen Entwicklers.
+        /// Gibt an ob Provider verbunden, Webhook gesund und Checkout aktiv ist.
+        /// Enthält keine Bank- oder Steuerdaten.
+        /// </summary>
+        public const string MorStatus   = "/api/developer/mor/status";
+
+        /// <summary>
+        /// PUT — CheckoutUrl einer Extension aktualisieren.
+        /// Body: MorProviderUpdateRequest (extensionId + checkoutUrl).
+        /// JWT (Developer, Owner des Moduls) erforderlich.
+        /// </summary>
+        public const string MorProvider = "/api/developer/mor/provider";
     }
 
     // ── Käuferkonto / Buyer Account (Phase 5.8) ───────────────────────────────
@@ -518,6 +533,14 @@ public static class AaiaApiRoutes
         public const string BlockRelease          = "/api/admin/marketplace/releases/{releaseId:int}/block";
         /// <summary>POST — Release-Sperre aufheben (Owner only).</summary>
         public const string UnblockRelease        = "/api/admin/marketplace/releases/{releaseId:int}/unblock";
+
+        // ── Phase 5.11: MoR Account Status ───────────────────────────────────
+        /// <summary>
+        /// GET — MoR-Verbindungsstatus aller ETW-Konten.
+        /// Zeigt: ohne Mapping, ohne CheckoutUrl, Webhook-Probleme, Provider-Mismatch.
+        /// Nur Owner/Admin.
+        /// </summary>
+        public const string MorAccountStatus = "/api/admin/mor/account-status";
     }
 
     // ── MoR Webhooks (Phase 5.5) ──────────────────────────────────────────────
