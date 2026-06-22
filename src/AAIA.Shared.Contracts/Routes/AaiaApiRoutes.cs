@@ -301,6 +301,25 @@ public static class AaiaApiRoutes
         /// JWT (Developer, Owner des Moduls) erforderlich.
         /// </summary>
         public const string MorProvider = "/api/developer/mor/provider";
+
+        // ── Phase 5.12: MoR Gate ─────────────────────────────────────────────
+        /// <summary>GET — Liste eigener MoR-Accounts. POST — Neuen Account einreichen.</summary>
+        public const string MorAccounts      = "/api/developer/mor/accounts";
+
+        /// <summary>GET — Details zu einem MoR-Account.</summary>
+        public const string MorAccountById   = "/api/developer/mor/accounts/{id:int}";
+
+        /// <summary>GET — MoR-Produkte einer Extension. POST — Neues Produkt einreichen.</summary>
+        public const string ExtensionMorProducts   = "/api/developer/extensions/{extensionId}/mor-products";
+
+        /// <summary>GET — Details zu einem MoR-Produkt.</summary>
+        public const string ExtensionMorProductById = "/api/developer/extensions/{extensionId}/mor-products/{id:int}";
+
+        /// <summary>
+        /// GET — PublishGate-Prüfung für eine Extension.
+        /// Gibt PublishGateResultDto zurück: CanPublish + alle Einzel-Checks.
+        /// </summary>
+        public const string PublishGateCheck = "/api/developer/extensions/{extensionId}/publish-gate";
     }
 
     /// <summary>
@@ -541,6 +560,25 @@ public static class AaiaApiRoutes
         /// Nur Owner/Admin.
         /// </summary>
         public const string MorAccountStatus = "/api/admin/mor/account-status";
+
+        // ── Phase 5.12: MoR Gate Admin ───────────────────────────────────────
+        /// <summary>GET — Alle ETW MoR-Accounts (paginiert). Owner only.</summary>
+        public const string AdminMorAccounts      = "/api/admin/mor/accounts";
+
+        /// <summary>PUT — Account verifizieren (CommissionVerified setzen). Owner only.</summary>
+        public const string AdminMorAccountVerify = "/api/admin/mor/accounts/{id:int}/verify";
+
+        /// <summary>PUT — Account sperren. Owner only.</summary>
+        public const string AdminMorAccountSuspend = "/api/admin/mor/accounts/{id:int}/suspend";
+
+        /// <summary>GET — Alle Extension-MoR-Produkte (paginiert, filterbar). Owner only.</summary>
+        public const string AdminMorProducts       = "/api/admin/mor/products";
+
+        /// <summary>PUT — Provisionsrate verifizieren (CommissionVerified). Owner only.</summary>
+        public const string AdminMorProductVerify  = "/api/admin/mor/products/{id:int}/verify-commission";
+
+        /// <summary>PUT — Produkt sperren. Owner only.</summary>
+        public const string AdminMorProductSuspend = "/api/admin/mor/products/{id:int}/suspend";
     }
 
     // ── MoR Webhooks (Phase 5.5) ──────────────────────────────────────────────
