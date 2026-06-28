@@ -579,6 +579,34 @@ public static class AaiaApiRoutes
 
         /// <summary>PUT — Produkt sperren. Owner only.</summary>
         public const string AdminMorProductSuspend = "/api/admin/mor/products/{id:int}/suspend";
+
+        // ── Phase 5.14: QA / Simulate (nur Dev + Staging) ──────────────────
+        /// <summary>
+        /// POST — Kauf simulieren: erzeugt intern einen order_created-Webhook-Flow.
+        /// Nur verfuegbar wenn ASPNETCORE_ENVIRONMENT != Production.
+        /// Owner only.
+        /// </summary>
+        public const string SimulatePurchase = "/api/admin/test/simulate-purchase";
+
+        /// <summary>
+        /// POST — Refund simulieren: widerruft eine vorhandene Lizenz.
+        /// Nur verfuegbar wenn ASPNETCORE_ENVIRONMENT != Production.
+        /// Owner only.
+        /// </summary>
+        public const string SimulateRefund = "/api/admin/test/simulate-refund";
+
+        // ── Phase 5.15: Webhook-Replay + License-Recovery ──────────────────
+        /// <summary>POST — Webhook-Event erneut verarbeiten (RawPayload aus DB). Owner only.</summary>
+        public const string ReplayWebhookEvent = "/api/admin/mor/events/{id:int}/replay";
+
+        /// <summary>GET — Liste der replaybar-kandidaten (Skipped/Error, mit Payload).</summary>
+        public const string ReplayableCandidates = "/api/admin/mor/events/replayable";
+
+        /// <summary>POST — Lizenz manuell vergeben (Recovery, Freikopie). Owner only.</summary>
+        public const string GrantLicense = "/api/admin/licenses/grant";
+
+        /// <summary>POST — Lizenz manuell widerrufen (Recovery). Owner only.</summary>
+        public const string RevokeLicenseAdmin = "/api/admin/licenses/revoke";
     }
 
     // ── MoR Webhooks (Phase 5.5) ──────────────────────────────────────────────
