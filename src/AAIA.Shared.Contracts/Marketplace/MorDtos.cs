@@ -79,7 +79,7 @@ public sealed record MorStatusDto(
     /// <summary>Checkout ist aktiv (≥1 veröffentlichtes Modul mit CheckoutUrl).</summary>
     bool             CheckoutActive,
 
-    /// <summary>ProviderConnected && CheckoutActive — Payout-Setup vollständig.</summary>
+    /// <summary>ProviderConnected &amp;&amp; CheckoutActive — Payout-Setup vollständig.</summary>
     bool             PayoutSetupComplete,
 
     /// <summary>Zeitpunkt des letzten verarbeiteten MoR-Webhook-Events.</summary>
