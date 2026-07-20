@@ -8,7 +8,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>AAIA.Shared.Contracts</PackageId>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <Authors>AndreAIAgent GmbH</Authors>
     <Company>AndreAIAgent GmbH</Company>
     <Description>Shared contracts, DTOs, and interfaces for the AAIA (Andre AI Agent) ecosystem. Use this package to build modules and plugins for AAIAS.</Description>
