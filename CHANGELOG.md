@@ -1,5 +1,21 @@
 # CHANGELOG — AAIA.Shared.Contracts
 
+## [2.2.1] — 2026-07-20
+
+### Added
+
+- `AAIA.Shared.Contracts.V3.AaiaPermissions` — canonical, stable permission identifier catalog
+  for AAIA permission contract v0.7.2. Defines 9 IDs across `Duki.*` and `Email.*` namespaces,
+  `ContractVersion = "0.7.2"`, an immutable `FrozenSet<string> All`, and a fail-closed
+  `IsKnown(string?)` helper. No role matrix; authorization decisions remain server-owned.
+- Contract tests in `AAIA.Shared.Contracts.Tests` covering completeness (9 IDs), uniqueness,
+  exact spelling, `IsKnown` fail-closed semantics, immutability of `All`, and `ContractVersion`.
+
+### Changed
+
+- Upgraded CI (`build.yml`) to `actions/checkout@v5` and `actions/setup-dotnet@v5` to eliminate
+  Node.js 20 deprecation warnings.
+
 ## [2.2.0] — 2026-07-09
 
 ### Added (V3 — additiv, keine Breaking Changes)
