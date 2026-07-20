@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Integrity Guard
         run: python3 scripts/check_integrity.py src/
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
 
@@ -32,6 +32,9 @@ jobs:
 
       - name: Pack
         run: dotnet pack src/AAIA.Shared.Contracts/AAIA.Shared.Contracts.csproj -c Release --no-build -o ./artifacts
+
+      - name: Diff check (no uncommitted changes)
+        run: git diff --exit-code
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
